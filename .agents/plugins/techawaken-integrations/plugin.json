@@ -1,0 +1,5 @@
+{
+  "name": "techawaken-cloud-integrations",
+  "description": "Project-specific MCP servers for Aiven, Render, Vercel, and Hostinger",
+  "version": "1.0.0"
+}

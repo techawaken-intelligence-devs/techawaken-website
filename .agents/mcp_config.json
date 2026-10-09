@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "vercel": {
+      "serverUrl": "https://mcp.vercel.com"
+    },
+    "render": {
+      "serverUrl": "https://mcp.render.com/mcp"
+    },
+    "aiven": {
+      "serverUrl": "https://mcp.aiven.live/mcp"
+    },
+    "hostinger": {
+      "serverUrl": "https://mcp.hostinger.com"
+    }
+  }
+}

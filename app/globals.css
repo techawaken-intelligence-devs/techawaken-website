@@ -1,0 +1,247 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  TechAwaken design system — "Signal"
+  Black / white canvas, a single yellow signal used as a marker, never as a flood.
+  In light mode yellow sits *behind* ink (highlighter). In dark mode it becomes ink.
+*/
+
+:root {
+  color-scheme: light;
+  --background: #f6f5f0;
+  --foreground: #0b0b0a;
+  --muted-foreground: #5f5e59;
+  --line: rgba(11, 11, 10, 0.12);
+  --line-strong: rgba(11, 11, 10, 0.28);
+  --surface: #0b0b0a;
+  --surface-foreground: #f6f5f0;
+  --surface-muted: #9a9993;
+  --surface-line: rgba(246, 245, 240, 0.14);
+  --signal: #ffd21f;
+  --signal-ink: #0b0b0a;
+  --signal-text: #0b0b0a;
+
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --secondary: #ebe9e2;
+  --secondary-foreground: var(--foreground);
+  --muted: #ebe9e2;
+  --accent: var(--signal);
+  --accent-foreground: var(--signal-ink);
+  --destructive: #c62828;
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--foreground);
+  --radius: 0.125rem;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #070707;
+  --foreground: #f2f1ec;
+  --muted-foreground: #8d8c86;
+  --line: rgba(242, 241, 236, 0.1);
+  --line-strong: rgba(242, 241, 236, 0.26);
+  --surface: #111110;
+  --surface-foreground: #f2f1ec;
+  --surface-muted: #8d8c86;
+  --surface-line: rgba(242, 241, 236, 0.1);
+  --signal: #ffd21f;
+  --signal-ink: #070707;
+  --signal-text: #ffd21f;
+  --secondary: #161615;
+  --muted: #161615;
+  --ring: var(--signal);
+}
+
+@theme inline {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-line: var(--surface-line);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-signal-text: var(--signal-text);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+
+  --ease-signal: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--signal);
+    color: var(--signal-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* Type primitives */
+@utility font-display {
+  font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: 'wdth' 95;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+@utility text-outline {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.5px currentColor;
+}
+
+@utility label {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* The highlighter: yellow behind ink in light, yellow ink in dark */
+@utility mark {
+  background-image: linear-gradient(var(--signal), var(--signal));
+  background-repeat: no-repeat;
+  background-size: 100% 0.42em;
+  background-position: 0 88%;
+  :where(.dark) & {
+    background-image: none;
+    color: var(--signal);
+  }
+}
+
+/* Hero lines are pre-hidden only when motion is allowed and JS has run the head script */
+html.motion [data-hero-line] {
+  transform: translate3d(0, 105%, 0);
+}
+
+/* Preloader exists only for motion-enabled, first-in-session visits */
+.preloader {
+  display: none;
+}
+html.motion:not(.intro-skip) .preloader {
+  display: flex;
+}
+
+/* Header veil: fades page content under the bar instead of a hard edge */
+.header-veil {
+  background: linear-gradient(to bottom, var(--background) 0%, color-mix(in oklab, var(--background) 70%, transparent) 55%, transparent 100%);
+}
+
+/* Thin, crisp outline on small screens where 1.5px reads heavy */
+@media (max-width: 640px) {
+  .text-outline {
+    -webkit-text-stroke-width: 1px;
+  }
+}
+
+/* Native <dialog> used for product case studies */
+dialog.case-study::backdrop {
+  background: rgba(7, 7, 7, 0.72);
+}
+dialog.case-study {
+  max-width: none;
+  max-height: none;
+}
+
+
+/* Theme transition (View Transitions API) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+@keyframes marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Theme crossfade fallback when the View Transitions API is unavailable */
+html.theme-fade,
+html.theme-fade *,
+html.theme-fade *::before,
+html.theme-fade *::after {
+  transition-property: background-color, color, border-color, fill, stroke, -webkit-text-stroke-color !important;
+  transition-duration: 600ms !important;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* Horizontal product showcase only where a full panel fits on screen */
+@custom-variant wide (@media (min-width: 1024px) and (min-height: 700px));

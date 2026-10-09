@@ -1,0 +1,45 @@
+# Large media
+*.mp4
+
+# Dependencies
+node_modules
+server/node_modules
+.pnpm-store
+
+# Next.js build
+.next/
+out/
+build/
+dist/
+server/dist
+
+# Environment variables
+.env
+.env*.local
+server/.env
+server/data/*.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE & OS
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# Vercel
+.vercel/
+
+# Sandbox
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
