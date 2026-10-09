@@ -69,6 +69,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     const refresh = () => ScrollTrigger.refresh()
     document.fonts?.ready.then(refresh)
     window.addEventListener('load', refresh)
+    window.addEventListener('ta:ready', refresh)
 
     // Deep link (#work etc.) — jump once layout has settled.
     if (location.hash.length > 1) {
@@ -82,6 +83,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     return () => {
       document.removeEventListener('click', onClick)
       window.removeEventListener('load', refresh)
+      window.removeEventListener('ta:ready', refresh)
       gsap.ticker.remove(raf)
       instance.destroy()
       lenisInstance = null

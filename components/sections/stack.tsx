@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { Layout, Server, Cloud, Database, Search, X, CheckCircle2, ShieldCheck, Zap, Layers } from 'lucide-react'
-import { gsap, MOTION_OK, useGSAP } from '@/lib/gsap'
+import { gsap, MOTION_OK, onSiteReady, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { stackDomains, stackIntro } from '@/lib/content'
 
 const domainIcons: Record<string, typeof Layout> = {
@@ -18,27 +18,106 @@ export function Stack() {
   const root = useRef<HTMLElement>(null)
   const [activeFilter, setActiveFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
+  const hasRevealedRef = useRef<boolean>(false)
 
   // GSAP scroll-triggered entrance animation
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
       mm.add(MOTION_OK, () => {
-        gsap.from('[data-stack-card]', {
-          y: 35,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.08,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '[data-stack-grid]',
-            start: 'top 85%',
-          },
+        const playEntrance = () => {
+          if (hasRevealedRef.current) return
+          hasRevealedRef.current = true
+          gsap.fromTo(
+            '[data-stack-card]',
+            { opacity: 0, y: 30 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.75,
+              stagger: 0.08,
+              ease: 'power2.out',
+              clearProps: 'opacity,transform',
+            },
+          )
+        }
+
+        // Check if section is already near or in viewport
+        const rect = root.current?.getBoundingClientRect()
+        if (rect && rect.top < window.innerHeight * 0.9) {
+          playEntrance()
+          return
+        }
+
+        ScrollTrigger.create({
+          trigger: root.current,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => playEntrance(),
         })
       })
     },
     { scope: root },
   )
+
+  // Refresh ScrollTrigger when preloader completes
+  useEffect(() => {
+    return onSiteReady(() => {
+      ScrollTrigger.refresh()
+    })
+  }, [])
+
+  // Animate cards smoothly when user changes filters or search query
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
+    if (!root.current) return
+    const cards = root.current.querySelectorAll<HTMLElement>('[data-stack-card]')
+    if (cards.length) {
+      hasRevealedRef.current = true
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 16 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          stagger: 0.03,
+          ease: 'power2.out',
+          clearProps: 'opacity,transform',
+        },
+      )
+    }
+  }, [activeFilter, searchQuery])
+
+  // Safety fallback: ensure cards are always visible if scroll trigger fails to fire
+  useEffect(() => {
+    const el = root.current
+    if (!el || typeof IntersectionObserver === 'undefined') return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const cards = el.querySelectorAll<HTMLElement>('[data-stack-card]')
+            cards.forEach((card) => {
+              if (getComputedStyle(card).opacity === '0') {
+                gsap.to(card, { opacity: 1, y: 0, duration: 0.4, clearProps: 'opacity,transform' })
+              }
+            })
+          }
+        })
+      },
+      { threshold: 0.05 },
+    )
+
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
 
   // Filter & Search logic
   const filteredDomains = useMemo(() => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { gsap, READY_EVENT } from '@/lib/gsap'
+import { gsap, ScrollTrigger, READY_EVENT } from '@/lib/gsap'
 import { lenisInstance } from './smooth-scroll'
 
 const WORD = 'TechAwaken'
@@ -12,6 +12,7 @@ function markReady() {
   d.dataset.intro = 'done'
   performance.mark?.('ta:ready')
   window.dispatchEvent(new Event(READY_EVENT))
+  requestAnimationFrame(() => ScrollTrigger.refresh())
 }
 
 /**
