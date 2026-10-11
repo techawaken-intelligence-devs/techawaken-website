@@ -7,34 +7,49 @@
 
 ## 🏗️ Architecture Overview
 
-| Component | Platform / Tech | Description |
+| Component | Platform / Tech | Production Endpoint / Details |
 | :--- | :--- | :--- |
-| **Frontend** | **Next.js 16 (React 19) + Vercel** | High-performance aesthetic marketing website, interactive showcase, and `/admin` portal |
-| **Backend API** | **Node.js (Express + TS) on Render** | Live Production API: [https://techawaken-backend.onrender.com](https://techawaken-backend.onrender.com) |
-| **Database** | **PostgreSQL 18 (Aiven Cloud)** | Service `techawaken-pg` · DB: `techawaken_production` (Bangalore) |
-| **Domain & DNS**| **Hostinger** | Primary domain `techawakenintelligence.com` pointing to Vercel (frontend) & Render (API) |
-| **AI Protocol** | **Model Context Protocol (MCP)** | Project-scoped MCP integrations for Vercel, Render, Aiven, and Hostinger |
+| **Frontend** | **Next.js 16 (React 19) + Vercel** | Live Vercel: [https://techawaken-website.vercel.app](https://techawaken-website.vercel.app)<br/>Custom Domain: [https://techawakenintelligence.com](https://techawakenintelligence.com) |
+| **Admin Portal** | **Next.js + Tailwind / GSAP** | [https://techawaken-website.vercel.app/admin](https://techawaken-website.vercel.app/admin)<br/>[https://techawakenintelligence.com/admin](https://techawakenintelligence.com/admin) |
+| **Backend API** | **Node.js (Express + TS) on Render** | Live Render API: [https://techawaken-backend.onrender.com](https://techawaken-backend.onrender.com)<br/>Custom Domain: `https://api.techawakenintelligence.com` |
+| **Database** | **PostgreSQL 18 (Aiven Cloud)** | Service: `techawaken-pg` · Database: `techawaken_production` (Bangalore) |
+| **Domain & DNS**| **Hostinger** | Apex (`@`), `www` pointing to Vercel; `api` pointing to Render |
+| **AI Protocol** | **Model Context Protocol (MCP)** | Project-scoped MCP servers for Aiven, Render, Vercel, and Hostinger |
 
 ---
 
 ## ⚡ Project-Scoped MCP Configuration
 
-The project is preconfigured with MCP (Model Context Protocol) endpoints in `.agents/plugins/techawaken-integrations/mcp_config.json`, `.agents/mcp_config.json`, and `.vscode/mcp.json`:
+The project is preconfigured with all 4 MCP servers in `.agents/plugins/techawaken-integrations/mcp_config.json`, `.agents/mcp_config.json`, and `.vscode/mcp.json`:
 
 ```json
 {
   "mcpServers": {
+    "aiven": {
+      "command": "npx",
+      "args": ["-y", "mcp-aiven"],
+      "env": {
+        "AIVEN_TOKEN": "${AIVEN_TOKEN}",
+        "AIVEN_READ_ONLY": "false",
+        "AIVEN_ALLOW_SECRETS": "true"
+      }
+    },
+    "render": {
+      "command": "npx",
+      "args": ["-y", "@niyogi/render-mcp"],
+      "env": {
+        "RENDER_API_KEY": "${RENDER_API_KEY}"
+      }
+    },
     "vercel": {
       "serverUrl": "https://mcp.vercel.com"
     },
-    "render": {
-      "serverUrl": "https://mcp.render.com/mcp"
-    },
-    "aiven": {
-      "serverUrl": "https://mcp.aiven.live/mcp"
-    },
     "hostinger": {
-      "serverUrl": "https://mcp.hostinger.com"
+      "command": "npx",
+      "args": ["-y", "@hostinger/mcp", "--stdio"],
+      "env": {
+        "HOSTINGER_API_TOKEN": "${HOSTINGER_API_TOKEN}"
+      }
     }
   }
 }

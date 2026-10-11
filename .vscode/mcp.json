@@ -20,7 +20,11 @@
       "serverUrl": "https://mcp.vercel.com"
     },
     "hostinger": {
-      "serverUrl": "https://mcp.hostinger.com"
+      "command": "npx",
+      "args": ["-y", "@hostinger/mcp", "--stdio"],
+      "env": {
+        "HOSTINGER_API_TOKEN": "${HOSTINGER_API_TOKEN}"
+      }
     }
   }
 }
