@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { Loader2, CheckCircle2 } from 'lucide-react'
 import { gsap, MOTION_OK, useGSAP } from '@/lib/gsap'
 import { company, contact } from '@/lib/content'
 import { Magnetic } from '@/components/system/motion'
@@ -8,6 +9,7 @@ import { Magnetic } from '@/components/system/motion'
 export function Contact() {
   const root = useRef<HTMLElement>(null)
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const formRef = useRef<HTMLFormElement>(null)
 
   useGSAP(
@@ -25,12 +27,14 @@ export function Contact() {
     { scope: root },
   )
 
-  // Same delivery as the live site: Web3Forms, same payload shape.
+  // Web3Forms integration matching reference site logic
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const data = new FormData(e.currentTarget)
     const get = (k: string) => String(data.get(k) ?? '').trim()
     setStatus('sending')
+    setErrorMessage('')
+
     try {
       const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
@@ -45,11 +49,18 @@ export function Contact() {
           from_name: 'TechAwaken Website',
         }),
       })
-      let json: { success?: boolean | string } = {}
+
+      let json: { success?: boolean | string; message?: string } = {}
       try {
         json = await res.json()
       } catch {}
-      setStatus(res.ok && (json.success === true || json.success === 'true' || res.status === 200) ? 'sent' : 'error')
+
+      if (res.ok && (json.success === true || json.success === 'true' || res.status === 200)) {
+        setStatus('sent')
+      } else {
+        setErrorMessage(json.message || '')
+        setStatus('error')
+      }
     } catch {
       setStatus('error')
     }
@@ -58,6 +69,7 @@ export function Contact() {
   const reset = () => {
     formRef.current?.reset()
     setStatus('idle')
+    setErrorMessage('')
   }
 
   return (
@@ -120,6 +132,9 @@ export function Contact() {
             <Field label="Subject" name="subject" required />
             <Field label="Phone" name="phone" type="tel" autoComplete="tel" inputMode="tel" />
           </div>
+          {/* Honeypot field to filter spam bots */}
+          <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
+
           <div className="group relative mt-9">
             <label htmlFor="message" className="label text-muted-foreground transition-colors group-focus-within:text-foreground">
               Message
@@ -140,21 +155,30 @@ export function Contact() {
                 type="submit"
                 disabled={status === 'sending'}
                 data-cursor="Open"
-                className="group relative inline-flex h-14 items-center gap-3 overflow-hidden bg-foreground px-8 label text-background disabled:opacity-60"
+                className="group relative inline-flex h-14 items-center gap-3 overflow-hidden bg-foreground px-8 label text-background disabled:opacity-60 cursor-pointer"
               >
                 <span aria-hidden="true" className="absolute inset-0 origin-bottom scale-y-0 bg-signal transition-transform duration-500 ease-signal group-hover:scale-y-100" />
-                <span className="relative transition-colors duration-300 group-hover:text-signal-ink">
-                  {status === 'sending' ? 'Sending…' : 'Send Message'}
-                </span>
-                <span aria-hidden="true" className="relative transition-[color,transform] duration-500 ease-signal group-hover:translate-x-1 group-hover:text-signal-ink">
-                  →
-                </span>
+                {status === 'sending' ? (
+                  <>
+                    <Loader2 className="relative h-4 w-4 animate-spin text-signal" />
+                    <span className="relative transition-colors duration-300">Sending…</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="relative transition-colors duration-300 group-hover:text-signal-ink">
+                      Send Message
+                    </span>
+                    <span aria-hidden="true" className="relative transition-[color,transform] duration-500 ease-signal group-hover:translate-x-1 group-hover:text-signal-ink">
+                      →
+                    </span>
+                  </>
+                )}
               </button>
             </Magnetic>
             <p className="text-sm text-muted-foreground" role="status" aria-live="polite">
               {status === 'error' && (
                 <>
-                  ⚠️ Something went wrong. Please try again or email us at{' '}
+                  ⚠️ {errorMessage ? `${errorMessage}. ` : 'Something went wrong. '}Please try again or email us at{' '}
                   <a href={`mailto:${company.email}`} className="text-foreground underline decoration-signal decoration-2 underline-offset-4">
                     {company.email}
                   </a>
@@ -170,7 +194,9 @@ export function Contact() {
             aria-live="polite"
             className="flex flex-col items-start justify-center border-t-2 border-signal pt-8 animate-in fade-in slide-in-from-bottom-4 duration-700 md:col-span-7 md:col-start-6"
           >
-            <p className="label text-muted-foreground">✅</p>
+            <div className="flex h-12 w-12 items-center justify-center border border-line bg-secondary/30">
+              <CheckCircle2 className="h-6 w-6 text-signal" />
+            </div>
             <p className="mt-4 font-display text-[clamp(1.75rem,3.5vw,2.75rem)]">Message Sent!</p>
             <p className="mt-4 max-w-md text-lg leading-relaxed text-muted-foreground">
               Thank you for reaching out. We&apos;ll get back to you within 24 hours.
@@ -178,7 +204,7 @@ export function Contact() {
             <button
               type="button"
               onClick={reset}
-              className="group mt-8 inline-flex h-12 items-center gap-3 border border-line-strong px-6 label text-foreground transition-colors duration-300 hover:border-foreground"
+              className="group mt-8 inline-flex h-12 items-center gap-3 border border-line-strong px-6 label text-foreground transition-colors duration-300 hover:border-foreground cursor-pointer"
             >
               Send Another Message
               <span aria-hidden="true" className="transition-transform duration-500 ease-signal group-hover:translate-x-1">→</span>
