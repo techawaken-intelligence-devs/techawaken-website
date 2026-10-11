@@ -1,29 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
-import { gsap, MOTION_OK, useGSAP } from '@/lib/gsap'
 import { company, footer, products } from '@/lib/content'
 
-const WORD = 'TechAwaken'
-
 export function Footer() {
-  const root = useRef<HTMLElement>(null)
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia()
-      mm.add(MOTION_OK, () => {
-        gsap.from('[data-wm-char]', {
-          yPercent: 100,
-          ease: 'none',
-          stagger: 0.04,
-          scrollTrigger: { trigger: '[data-wordmark]', start: 'top bottom', end: 'bottom bottom', scrub: 0.6 },
-        })
-      })
-    },
-    { scope: root },
-  )
-
   const col = 'label text-muted-foreground'
   const link = 'group relative inline-block text-sm'
   const underline = (
@@ -31,7 +10,7 @@ export function Footer() {
   )
 
   return (
-    <footer ref={root} className="relative overflow-hidden border-t border-line px-5 pt-16 md:px-8 md:pt-20">
+    <footer className="relative overflow-hidden border-t border-line px-5 pt-16 md:px-8 md:pt-20">
       <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-12">
         <div className="sm:col-span-2 md:col-span-12 lg:col-span-3">
           <p className="max-w-sm text-pretty text-lg leading-relaxed">{company.tagline}</p>
@@ -111,19 +90,7 @@ export function Footer() {
         </div>
       </div>
 
-      <p
-        aria-hidden="true"
-        data-wordmark
-        className="mt-16 flex select-none overflow-hidden whitespace-nowrap font-display text-[calc((100vw-2.5rem)/5.5)] leading-[0.78] md:text-[calc((100vw-4rem)/5.5)] md:mt-24"
-      >
-        {WORD.split('').map((c, i) => (
-          <span key={i} data-wm-char className={`inline-block ${i >= 4 ? 'text-outline' : ''}`}>
-            {c}
-          </span>
-        ))}
-      </p>
-
-      <div className="flex flex-col gap-2 border-t border-line py-5 label text-muted-foreground md:flex-row md:justify-between">
+      <div className="mt-16 flex flex-col gap-2 border-t border-line py-5 label text-muted-foreground md:mt-20 md:flex-row md:justify-between">
         <span>
           © {new Date().getFullYear()} {company.legal}. {footer.copyright}
         </span>
