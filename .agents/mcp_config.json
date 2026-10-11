@@ -1,13 +1,19 @@
 {
   "mcpServers": {
-    "vercel": {
-      "serverUrl": "https://mcp.vercel.com"
+    "aiven": {
+      "command": "npx",
+      "args": ["-y", "mcp-aiven"],
+      "env": {
+        "AIVEN_TOKEN": "${AIVEN_TOKEN}",
+        "AIVEN_READ_ONLY": "false",
+        "AIVEN_ALLOW_SECRETS": "true"
+      }
     },
     "render": {
       "serverUrl": "https://mcp.render.com/mcp"
     },
-    "aiven": {
-      "serverUrl": "https://mcp.aiven.live/mcp"
+    "vercel": {
+      "serverUrl": "https://mcp.vercel.com"
     },
     "hostinger": {
       "serverUrl": "https://mcp.hostinger.com"

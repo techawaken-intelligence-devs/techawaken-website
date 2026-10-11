@@ -165,8 +165,9 @@ export async function initDb(): Promise<void> {
 
   if (databaseUrl) {
     console.log('[DB] Connecting to PostgreSQL (Aiven / Cloud)...');
+    const cleanUrl = databaseUrl.replace(/[?&]sslmode=[^&]+/g, '');
     pool = new Pool({
-      connectionString: databaseUrl,
+      connectionString: cleanUrl,
       ssl: process.env.DB_SSL === 'false' ? false : { rejectUnauthorized: false }
     });
 
