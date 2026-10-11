@@ -10,7 +10,11 @@
       }
     },
     "render": {
-      "serverUrl": "https://mcp.render.com/mcp"
+      "command": "npx",
+      "args": ["-y", "@niyogi/render-mcp"],
+      "env": {
+        "RENDER_API_KEY": "${RENDER_API_KEY}"
+      }
     },
     "vercel": {
       "serverUrl": "https://mcp.vercel.com"

@@ -10,8 +10,8 @@
 | Component | Platform / Tech | Description |
 | :--- | :--- | :--- |
 | **Frontend** | **Next.js 16 (React 19) + Vercel** | High-performance aesthetic marketing website, interactive showcase, and `/admin` portal |
-| **Backend API** | **Node.js (Express + TypeScript) + Render** | REST API engine for dynamic content, open positions, candidate applications, and admin auth |
-| **Database** | **PostgreSQL (Aiven Cloud)** | Managed PostgreSQL cluster with SSL for positions, applicants, and administrative credentials |
+| **Backend API** | **Node.js (Express + TS) on Render** | Live Production API: [https://techawaken-backend.onrender.com](https://techawaken-backend.onrender.com) |
+| **Database** | **PostgreSQL 18 (Aiven Cloud)** | Service `techawaken-pg` · DB: `techawaken_production` (Bangalore) |
 | **Domain & DNS**| **Hostinger** | Primary domain `techawakenintelligence.com` pointing to Vercel (frontend) & Render (API) |
 | **AI Protocol** | **Model Context Protocol (MCP)** | Project-scoped MCP integrations for Vercel, Render, Aiven, and Hostinger |
 
